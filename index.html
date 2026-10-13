@@ -1,15 +1,267 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>แบบทดสอบ SMART Dental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  html,body{margin:0;height:100%;background:#F7F9FD}
-  iframe{border:0;width:100%;height:100%;display:block}
+  :root{
+    --bg:#F7F9FD; --card:#ffffff; --ink:#1A1A1A; --muted:#4D4D4D; --line:#DEE1E5;
+    --brand:#21409A; --brand-ink:#ffffff; --brand-soft:#ECF1FF;
+    --ok:#006D23; --ok-soft:#E4FFEE; --bad:#BD002A; --bad-soft:#FFEDED; --warn-soft:#fff6e0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Kanit',system-ui,sans-serif;font-size:17px;line-height:1.55}
+  .wrap{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+  header{background:linear-gradient(135deg,#21409A 0%,#24468A 60%,#7F3E98 140%);color:var(--brand-ink);padding:22px 16px 26px}
+  header .in{max-width:640px;margin:0 auto}
+  header h1{font-size:21px;margin:0 0 2px;font-weight:700;line-height:1.35}
+  header p{margin:0;opacity:.9;font-size:15px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}
+  .card h2{font-size:18px;margin:0 0 10px}
+  .rule{background:var(--warn-soft);border:1px solid #f3dca0;border-radius:12px;padding:12px 14px;font-size:15.5px}
+  .rule b{color:#8a5a00}
+  .rule ul{margin:6px 0 0;padding-left:20px}
+  label{display:block;font-weight:600;margin:14px 0 6px}
+  label .req{color:var(--bad)}
+  input[type=text],select{width:100%;font:inherit;padding:12px;border:1px solid #BDC3C9;border-radius:10px;background:#fff;color:var(--ink)}
+  input[type=text]:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .hint{font-size:14px;color:var(--muted);margin-top:4px}
+  .err{color:var(--bad);font-size:14.5px;margin-top:6px;min-height:1px}
+  .btn{display:block;width:100%;font:inherit;font-weight:700;font-size:18px;padding:14px;border-radius:12px;border:0;background:var(--brand);color:var(--brand-ink);margin-top:18px;cursor:pointer}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+  .progress{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 8px}
+  .bar{height:8px;background:#DEE1E5;border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .25s}
+  .progress small{display:block;color:var(--muted);margin-top:4px;font-size:14px}
+  .q .num{font-size:14px;font-weight:700;color:var(--brand);letter-spacing:.3px}
+  .q .txt{font-weight:600;margin:4px 0 12px}
+  .opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-top:8px;cursor:pointer;transition:background .15s,border-color .15s}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .opt .k{flex:0 0 28px;height:28px;border-radius:50%;border:1.5px solid #9BB0C8;display:grid;place-items:center;font-weight:700;font-size:15px;color:var(--muted)}
+  .opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+  .opt.sel .k{background:var(--brand);border-color:var(--brand);color:#fff}
+  .opt:focus-within{outline:2px solid var(--brand);outline-offset:1px}
+  .score{text-align:center;padding:26px 18px}
+  .score .big{font-size:56px;font-weight:700;line-height:1}
+  .score .pct{color:var(--muted);margin-top:4px}
+  .badge{display:inline-block;margin-top:14px;padding:6px 18px;border-radius:99px;font-weight:700;font-size:18px}
+  .pass{background:var(--ok-soft);color:var(--ok)} .fail{background:var(--bad-soft);color:var(--bad)}
+  .res{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15.5px}
+  .res:first-child{border-top:0}
+  .res .ic{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;font-size:14px}
+  .res .ic.y{background:var(--ok)} .res .ic.n{background:var(--bad)}
+  .who{font-size:15px;color:var(--muted);text-align:center;margin-top:6px}
+  .loading{text-align:center;color:var(--muted);padding:40px 0}
+  .hidden{display:none!important}
+  .modal{position:fixed;inset:0;background:rgba(33,64,154,.5);display:grid;place-items:center;padding:16px;z-index:20}
+  .modal .box{background:#fff;border-radius:14px;padding:20px;max-width:420px;width:100%}
+  .modal .row{display:flex;gap:10px}
+  .modal .row .btn{margin-top:16px}
 </style>
 </head>
 <body>
-<iframe src="https://script.google.com/macros/s/AKfycbwX2sqjKu10i_CMP19sK6QElv6iLYThhqDd6c_aX6-xWRO68QFKj5PhMkp5deQoYhnG/exec" title="แบบทดสอบ SMART Dental"></iframe>
+<header><div class="in">
+  <h1 id="title">แบบทดสอบหลังการฝึกเชิงปฏิบัติการ ระบบ SMART Dental</h1>
+  <p id="subtitle">สำหรับผู้ช่วยทันตแพทย์</p>
+</div></header>
+
+<div class="wrap">
+  <div id="loading" class="loading">กำลังโหลดแบบทดสอบ…</div>
+
+  <!-- ขั้นที่ 1: ข้อมูลผู้สอบ -->
+  <section id="step-info" class="hidden">
+    <div class="card">
+      <h2>คำชี้แจง</h2>
+      <div class="rule">
+        <b>เกณฑ์การผ่าน: ต้องได้คะแนน <span id="passTxt">100%</span> (ตอบถูกครบทั้ง <span class="nQ">5</span> ข้อ)</b>
+        <ul>
+          <li>แบบทดสอบมีทั้งหมด <span class="nQ">5</span> ข้อ แบบปรนัย 4 ตัวเลือก</li>
+          <li>เลือกคำตอบที่ถูกที่สุดเพียง 1 คำตอบในแต่ละข้อ</li>
+          <li>ลำดับข้อและตัวเลือกจะสลับกันในแต่ละครั้ง</li>
+          <li>แจ้งผลคะแนนทันทีเมื่อส่งคำตอบ หากไม่ผ่านสามารถทำแบบทดสอบใหม่ได้</li>
+        </ul>
+      </div>
+    </div>
+    <form class="card" id="infoForm" novalidate>
+      <h2>ข้อมูลผู้ทำแบบทดสอบ</h2>
+      <label for="fName">ชื่อ - นามสกุล <span class="req">*</span></label>
+      <input type="text" id="fName" autocomplete="name" placeholder="เช่น สมหญิง ใจดี" maxlength="120">
+      <div class="err" id="eName"></div>
+
+      <label for="fPos">ตำแหน่ง <span class="req">*</span></label>
+      <select id="fPos"><option value="">— เลือกตำแหน่ง —</option></select>
+      <div class="err" id="ePos"></div>
+
+      <label for="fClinic">คลินิก / ศูนย์ / หน่วย <span class="req">*</span></label>
+      <select id="fClinic"><option value="">— เลือกคลินิก / ศูนย์ / หน่วย —</option></select>
+      <div class="err" id="eClinic"></div>
+
+      <button class="btn" type="submit">เริ่มทำแบบทดสอบ</button>
+    </form>
+  </section>
+
+  <!-- ขั้นที่ 2: ทำข้อสอบ -->
+  <section id="step-quiz" class="hidden">
+    <div class="progress">
+      <div class="bar"><i id="barFill"></i></div>
+      <small id="progTxt">ตอบแล้ว 0 / 5 ข้อ</small>
+    </div>
+    <div id="qList"></div>
+    <button class="btn" id="btnSubmit" disabled>ส่งคำตอบ</button>
+    <div class="err" id="eSubmit" style="text-align:center"></div>
+  </section>
+
+  <!-- ขั้นที่ 3: ผลคะแนน -->
+  <section id="step-result" class="hidden">
+    <div class="card score">
+      <div style="color:var(--muted)">คะแนนของคุณ</div>
+      <div class="big" id="rScore">0/5</div>
+      <div class="pct" id="rPct">ร้อยละ 0</div>
+      <div class="badge" id="rBadge">—</div>
+      <div class="who" id="rWho"></div>
+    </div>
+    <div class="card">
+      <h2>สรุปผลรายข้อ</h2>
+      <div id="rList"></div>
+    </div>
+    <div id="rFailBox" class="hidden">
+      <div class="rule" style="margin-top:14px">ยังไม่ผ่านเกณฑ์ <b>100%</b> กรุณาทบทวนเนื้อหาข้อที่ตอบผิด แล้วทำแบบทดสอบอีกครั้ง</div>
+      <button class="btn" id="btnRetry">ทำแบบทดสอบอีกครั้ง</button>
+    </div>
+    <div id="rPassBox" class="hidden">
+      <div class="rule" style="margin-top:14px;background:var(--ok-soft);border-color:#b7e2c3">ยินดีด้วย! คุณผ่านการประเมินหลังการอบรมเรียบร้อยแล้ว สามารถปิดหน้านี้ได้</div>
+    </div>
+  </section>
+</div>
+
+<div class="modal hidden" id="confirm">
+  <div class="box">
+    <h2 style="margin:0 0 6px;font-size:19px">ยืนยันการส่งคำตอบ?</h2>
+    <div style="color:var(--muted)">เมื่อส่งแล้วจะไม่สามารถแก้ไขคำตอบได้</div>
+    <div class="row">
+      <button class="btn ghost" id="cNo">กลับไปตรวจ</button>
+      <button class="btn" id="cYes">ส่งคำตอบ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const LETTERS = ['ก','ข','ค','ง','จ'];
+  let QUIZ = null, order = [], answers = {}, startAt = 0, person = null;
+
+  // เรียก Apps Script แบบไม่ส่ง cookie → ไม่ติดปัญหาล็อกอิน Google หลายบัญชี
+  const API = 'https://script.google.com/macros/s/AKfycbwX2sqjKu10i_CMP19sK6QElv6iLYThhqDd6c_aX6-xWRO68QFKj5PhMkp5deQoYhnG/exec';
+  const call = (fn, ...args) => fetch(API, { method: 'POST', credentials: 'omit', body: JSON.stringify({ fn, args }) })
+    .then(r => r.json()).then(r => { if (!r.ok) throw new Error(r.error); return r.data; });
+  const show = id => ['loading','step-info','step-quiz','step-result'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const store = { get(){ try { return JSON.parse(localStorage.getItem('sdQuizPerson') || 'null'); } catch(e){ return null; } },
+                  set(v){ try { localStorage.setItem('sdQuizPerson', JSON.stringify(v)); } catch(e){} } };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+
+  call('getQuiz').then(q => {
+    QUIZ = q;
+    $('title').textContent = q.title; $('subtitle').textContent = q.subtitle;
+    $('passTxt').textContent = q.passPercent + '%';
+    document.querySelectorAll('.nQ').forEach(e => e.textContent = q.questions.length);
+    q.positions.forEach(p => $('fPos').add(new Option(p, p)));
+    q.clinics.forEach(c => $('fClinic').add(new Option(c, c)));
+    const saved = store.get();
+    if (saved) {
+      $('fName').value = saved.name || '';
+      if (q.positions.indexOf(saved.position) >= 0) $('fPos').value = saved.position;
+      if (q.clinics.indexOf(saved.clinic) >= 0) $('fClinic').value = saved.clinic;
+    }
+    show('step-info');
+  }).catch(err => { $('loading').textContent = 'โหลดแบบทดสอบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง (' + (err.message || err) + ')'; });
+
+  $('infoForm').addEventListener('submit', ev => {
+    ev.preventDefault();
+    const name = $('fName').value.trim().replace(/\s+/g, ' ');
+    const position = $('fPos').value;
+    const clinic = $('fClinic').value;
+    $('eName').textContent = name.length < 3 || name.indexOf(' ') < 0 ? 'กรุณากรอกชื่อและนามสกุล (เว้นวรรคระหว่างชื่อกับนามสกุล)' : '';
+    $('ePos').textContent = position ? '' : 'กรุณาเลือกตำแหน่ง';
+    $('eClinic').textContent = clinic ? '' : 'กรุณาเลือกคลินิก / ศูนย์ / หน่วย';
+    if ($('eName').textContent || $('ePos').textContent || $('eClinic').textContent) return;
+    person = { name, position, clinic };
+    store.set(person);
+    startQuiz();
+  });
+
+  function startQuiz(){
+    answers = {}; startAt = Date.now();
+    order = shuffle(QUIZ.questions).map(q => ({ ...q, options: shuffle(q.options) }));
+    $('qList').innerHTML = order.map((q, i) => `
+      <div class="card q" role="radiogroup" aria-labelledby="qt${i}">
+        <div class="num">ข้อ ${i + 1} จาก ${order.length}</div>
+        <div class="txt" id="qt${i}">${esc(q.text)}</div>
+        ${q.options.map((o, j) => `
+          <label class="opt" data-q="${q.id}">
+            <input type="radio" name="${q.id}" value="${esc(o.id)}">
+            <span class="k">${LETTERS[j]}</span><span>${esc(o.text)}</span>
+          </label>`).join('')}
+      </div>`).join('');
+    $('eSubmit').textContent = '';
+    updateProgress();
+    show('step-quiz');
+    window.scrollTo(0, 0);
+  }
+
+  $('qList').addEventListener('change', ev => {
+    const inp = ev.target; if (inp.type !== 'radio') return;
+    answers[inp.name] = inp.value;
+    document.querySelectorAll(`.opt[data-q="${inp.name}"]`).forEach(l => l.classList.toggle('sel', l.querySelector('input').checked));
+    updateProgress();
+  });
+
+  function updateProgress(){
+    const n = Object.keys(answers).length, t = order.length;
+    $('barFill').style.width = (n / t * 100) + '%';
+    $('progTxt').textContent = `ตอบแล้ว ${n} / ${t} ข้อ` + (n < t ? '' : ' — พร้อมส่งคำตอบ');
+    $('btnSubmit').disabled = n < t;
+  }
+
+  $('btnSubmit').addEventListener('click', () => $('confirm').classList.remove('hidden'));
+  $('cNo').addEventListener('click', () => $('confirm').classList.add('hidden'));
+  $('cYes').addEventListener('click', () => {
+    $('confirm').classList.add('hidden');
+    const btn = $('btnSubmit'); btn.disabled = true; btn.textContent = 'กำลังส่งคำตอบ…';
+    const payload = { ...person, answers, submissionId: btn.dataset.sid || (btn.dataset.sid = uid()), seconds: Math.round((Date.now() - startAt) / 1000) };
+    call('submitAttempt', payload).then(r => {
+      delete btn.dataset.sid; btn.textContent = 'ส่งคำตอบ';
+      renderResult(r);
+    }).catch(err => {
+      btn.disabled = false; btn.textContent = 'ส่งคำตอบ';
+      $('eSubmit').textContent = 'ส่งไม่สำเร็จ: ' + (err.message || err) + ' — กรุณากดส่งอีกครั้ง';
+    });
+  });
+
+  function renderResult(r){
+    $('rScore').textContent = `${r.score}/${r.total}`;
+    $('rPct').textContent = `ร้อยละ ${r.percent}`;
+    $('rBadge').textContent = r.passed ? 'ผ่าน' : 'ไม่ผ่าน';
+    $('rBadge').className = 'badge ' + (r.passed ? 'pass' : 'fail');
+    $('rWho').textContent = `${person.name} · ${person.clinic} · ครั้งที่ ${r.attempt}`;
+    const byId = {}; r.results.forEach(x => byId[x.id] = x.correct);
+    $('rList').innerHTML = order.map((q, i) => `
+      <div class="res"><span class="ic ${byId[q.id] ? 'y' : 'n'}">${byId[q.id] ? '✓' : '✕'}</span>
+      <span><b>ข้อ ${i + 1}</b> ${esc(q.text)}<br><small style="color:${byId[q.id] ? 'var(--ok)' : 'var(--bad)'}">${byId[q.id] ? 'ตอบถูก' : 'ตอบผิด'}</small></span></div>`).join('');
+    $('rFailBox').classList.toggle('hidden', r.passed);
+    $('rPassBox').classList.toggle('hidden', !r.passed);
+    show('step-result');
+    window.scrollTo(0, 0);
+  }
+
+  $('btnRetry').addEventListener('click', startQuiz);
+})();
+</script>
 </body>
 </html>
